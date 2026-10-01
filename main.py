@@ -122,9 +122,17 @@ def parse_input_file(input_text: str) -> MapData | None:
         #     map_data.zones[name] = zone
         #     map_data.start_zone = name
 
-        # elif line.startswith("hub:"):
-        #     ...
-        #     map_data.zones[name] = zone
+        elif line.startswith("hub:"):
+            parts = line.split(":", maxsplit=1)
+            values = parts[1].strip().split()
+
+            if len(values) < 3:
+                print(
+                    f"Error on line {line_number}: invalid hub format",
+                    file=sys.stderr,
+                )
+
+
 
         # elif line.startswith("end_hub:"):
         #     ...

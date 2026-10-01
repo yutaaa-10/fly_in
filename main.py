@@ -69,15 +69,6 @@ def open_file(map_file: str) -> str | None:
         return None
 
 
-
-
-        # if not has_drone_quantity and line.startswith("nb_drones:"):
-        #     parts = line.split(":", maxsplit=1)
-        #     drone_quantity = int(parts[1].strip())
-        #     has_drone_quantity = True
-
-
-
 def parse_input_file(input_text: str) -> MapData | None:
     map_data = MapData()
 
@@ -131,6 +122,34 @@ def parse_input_file(input_text: str) -> MapData | None:
                     f"Error on line {line_number}: invalid hub format",
                     file=sys.stderr,
                 )
+            name = values[0]
+
+            if name in map_data.zones:
+                print(
+                    f"Error on line {line_number}: duplicate zone '{name}'",
+                    file=sys.stderr,
+                )
+                return None
+
+            try:
+                x = int(values[1])
+                y = int(values[2])
+            except ValueError:
+                print(
+                    f"Error on line {line_number}: coordinates must be integers",
+                    file=sys.stderr,
+                )
+                return None
+
+            zone = Zone(
+                name=name,
+                x=x,
+                y=y,
+            )
+            map_data.zones[name] = zone
+
+            
+
 
 
 

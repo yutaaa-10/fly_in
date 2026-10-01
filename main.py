@@ -2,6 +2,46 @@ import argparse
 import sys
 
 
+class MapData:
+    def __init__(self) -> None:
+        self.drone_quantity = 0
+        self.zones: dict[str, Zone] = {}
+        self.connections: list[Connection] = []
+        self.atart_zone: str | None = None
+        self.end_zone: str | None = None
+
+class Zone:
+    def __init__(
+        self,
+        name: str,
+        x: int,
+        y: int,
+        zone_type: str = "normal",
+        color: str = "none",
+        max_drones: int = 1,
+    ) -> None:
+        self.name = name
+        self.x = x
+        self.y = y
+        self.zone_type = zone_type
+        self.color = color
+        self.max_drones = max_drones
+
+
+class Connection:
+    def __init__(
+        self,
+        zone_a: str,
+        zone_b: str,
+        max_link_capacity: int = 1,
+    ) -> None:
+        self.zone_a = zone_a
+        self.zone_b = zone_b
+        self.max_link_capacity = max_link_capacity
+
+
+
+
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Drone routiong simulation"
@@ -29,10 +69,17 @@ def open_file(map_file: str) -> str | None:
         return None
 
 
-def parse_input_file(input_text: str) -> bool:
 
-    has_drone_quantity = False
-    drone_quantity = 0
+
+        # if not has_drone_quantity and line.startswith("nb_drones:"):
+        #     parts = line.split(":", maxsplit=1)
+        #     drone_quantity = int(parts[1].strip())
+        #     has_drone_quantity = True
+
+
+
+def parse_input_file(input_text: str) -> MapData | None:
+    map_data = MapData()
 
     lines = input_text.splitlines()
 
@@ -41,14 +88,36 @@ def parse_input_file(input_text: str) -> bool:
 
         if not line:
             continue
-        if line.startswith('#'):
+        if line.startswith("#"):
             continue
 
-        if not has_drone_quantity and line.startswith("nb_drones:"):
-            parts = line.split(":", maxsplit=1)
-            drone_quantity = int(parts[1].strip())
-            has_drone_quantity = True
-    return False
+        if line.startswith("nb_drones:"):
+            ...
+            map_data.drone_quantity = drone_quantity
+
+        elif line.startswith("start_hub:"):
+            ...
+            map_data.zones[name] = zone
+            map_data.start_zone = name
+
+        elif line.startswith("hub:"):
+            ...
+            map_data.zones[name] = zone
+
+        elif line.startswith("end_hub:"):
+            ...
+            map_data.zones[name] = zone
+            map_data.end_zone = name
+
+        elif line.startswith("connection:"):
+            ...
+            map_data.connections.append(connection)
+
+        else:
+            # parsing error
+            return None
+
+    return map_data
 
 
 def main() -> int:

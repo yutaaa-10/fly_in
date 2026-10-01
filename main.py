@@ -92,30 +92,52 @@ def parse_input_file(input_text: str) -> MapData | None:
             continue
 
         if line.startswith("nb_drones:"):
-            ...
+            parts = line.split(":", maxsplit=1)
+
+            if len(parts) != 2:
+                print(
+                    f"Error on line {line_number}: invalid nb_drones format",
+                    file=sys.stderr,
+                )
+                return None
+            value = parts[1].strip()
+            try:
+                drone_quantity = int (value)
+            except ValueError:
+                print(
+                    f"Error on line {line_number}: invalid nb_drones format",
+                    file=sys.stderr,
+                )
+                return None
+            if drone_quantity <= 0:
+                print(
+                    f"Error on line {line_number}: nb_droes must be positive",
+                    file=sys.stderr,
+                )
+                return None
             map_data.drone_quantity = drone_quantity
 
-        elif line.startswith("start_hub:"):
-            ...
-            map_data.zones[name] = zone
-            map_data.start_zone = name
+        # elif line.startswith("start_hub:"):
+        #     ...
+        #     map_data.zones[name] = zone
+        #     map_data.start_zone = name
 
-        elif line.startswith("hub:"):
-            ...
-            map_data.zones[name] = zone
+        # elif line.startswith("hub:"):
+        #     ...
+        #     map_data.zones[name] = zone
 
-        elif line.startswith("end_hub:"):
-            ...
-            map_data.zones[name] = zone
-            map_data.end_zone = name
+        # elif line.startswith("end_hub:"):
+        #     ...
+        #     map_data.zones[name] = zone
+        #     map_data.end_zone = name
 
-        elif line.startswith("connection:"):
-            ...
-            map_data.connections.append(connection)
+        # elif line.startswith("connection:"):
+        #     ...
+        #     map_data.connections.append(connection)
 
-        else:
-            # parsing error
-            return None
+        # else:
+        #     # parsing error
+        #     return None
 
     return map_data
 

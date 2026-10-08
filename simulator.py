@@ -23,7 +23,8 @@ class Simulator:
             key=lambda drone: drone.path_index,
             reverse=True,
         )
-        for drone in drones:
+
+        for drone in drones:    
             if drone.has_arrived():
                 continue
             current_zone = drone.current_zone()

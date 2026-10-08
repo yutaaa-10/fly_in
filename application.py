@@ -47,7 +47,6 @@ class Application:
         if map_data.start_zone is None or map_data.end_zone is None:
             return 1
 
-
         graph = Graph(map_data)
         path_finder = PathFinder(graph)
 
@@ -82,12 +81,12 @@ class Application:
         for path_index, drone_ids in enumerate(assignments):
             path = paths[path_index]
             for drone_id in drone_ids:
-                drones.append(
-                    Drone(
-                        drone_id=drone_id,
-                        path=path,
-                    )
+                drone = Drone(
+                    drone_id=drone_id,
+                    path=path,
                 )
+                drones.append(drone)
+        
         simulator = Simulator(drones, map_data)
         simulator.run()
         return 0

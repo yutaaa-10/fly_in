@@ -1,7 +1,6 @@
 from models import MapData
 
 
-
 class Graph:
     def __init__(self, map_data: MapData) -> None:
         self.map_data = map_data

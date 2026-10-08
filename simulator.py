@@ -1,4 +1,4 @@
-from models import Drone, MapData
+from models import Drone, MapData, Connection
 
 
 class Simulator:
@@ -31,12 +31,14 @@ class Simulator:
             if next_zone is None:
                 continue
             zone = self.map_data.zones[next_zone]
+
             connection = self.get_connection(
                 current_zone,
                 next_zone,
             )
             if connection is None:
                 continue
+
             edge_key = tuple(sorted(
                 (current_zone, next_zone)
             ))
@@ -44,16 +46,11 @@ class Simulator:
                 edge_key,
                 0,
             )
-            # Connection capacity check
             if used_capacity >= connection.max_link_capacity:
                 continue
-            # Zone capacity check
-            if (
-                zone.max_drones is not None
-                and occupancy[next_zone] >= zone.max_drones
-            ):
-                continue
-            # Move
+            if zone.max_drones is not None:
+                if occupancy[next_zone] >= zone.max_drones:
+                    continue
             occupancy[current_zone] -= 1
             occupancy[next_zone] += 1
             connection_usage[edge_key] = used_capacity + 1
@@ -80,19 +77,12 @@ class Simulator:
             occupancy[zone_name] += 1
         return occupancy
 
-    def get_connection(self, zone_a: str, zone_b: str):
+    def get_connection(self, zone_a: str, zone_b: str) -> Connection | None:
         for connection in self.map_data.connections:
-            same_direction = (
-                connection.zone_a == zone_a
-                and connection.zone_b == zone_b
-            )
+            if connection.zone_a == zone_a and connection.zone_b == zone_b:
+                return connection
 
-            reverse_direction = (
-                connection.zone_a == zone_b
-                and connection.zone_b == zone_a
-            )
-
-            if same_direction or reverse_direction:
+            if connection.zone_a == zone_b and connection.zone_b == zone_a:
                 return connection
         return None
 

@@ -6,7 +6,7 @@ class Router:
         path_costs: list[int],
     ) -> list[list[int]]:
         assignments: list[list[int]] = [[] for _ in paths]
-        print(paths)
+ 
 
         for drone_id in range(1, drone_quantity + 1):
             best_path_index = 0
@@ -17,5 +17,5 @@ class Router:
                 if score < best_score:
                     best_score = score
                     best_path_index = index
-                assignments[best_path_index].append(drone_id)
+            assignments[best_path_index].append(drone_id)
         return assignments

@@ -176,7 +176,6 @@ class Simulator:
                 return connection
         return None
 
-
     def get_connection_usage(
         self,
     ) -> dict[tuple[str, str], int]:
@@ -200,7 +199,6 @@ class Simulator:
             )
 
         return connection_usage
-
 
     def get_zone_reservations(self) -> dict[str, int]:
         reservations: dict[str, int] = {}

@@ -3,10 +3,10 @@ from models import MapData
 from parser_helper import ParserHelper
 
 
-
 class Parser:
     def __init__(self) -> None:
         self.helper = ParserHelper()
+
     def parse(
             self,
             input_text: str,
@@ -36,7 +36,7 @@ class Parser:
 
                 if len(parts) != 2:
                     print(
-                        f"Error on line {line_number}: invalid nb_drones format",
+                        f"Error on line {line_number}: invalid nb_drones",
                         file=sys.stderr,
                     )
                     return None
@@ -47,7 +47,7 @@ class Parser:
                     drone_quantity = int(value)
                 except ValueError:
                     print(
-                        f"Error on line {line_number}: invalid nb_drones format",
+                        f"Error on line {line_number}: invalid nb_drones",
                         file=sys.stderr,
                     )
                     return None
@@ -116,7 +116,6 @@ class Parser:
                     return None
 
                 map_data.zones[zone.name] = zone
-
 
             elif line.startswith("connection:"):
                 connection = self.helper.parse_connection(

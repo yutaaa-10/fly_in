@@ -7,6 +7,7 @@ from router import Router
 from simulator import Simulator
 from models import Drone
 
+
 class Application:
     def parse_arguments(self) -> argparse.Namespace:
         parser = argparse.ArgumentParser(
@@ -59,7 +60,7 @@ class Application:
             print(
                 "Error: no path from start to goal",
                 file=sys.stderr,
-                )
+            )
             return 1
 
         paths = path_finder.sort_paths_by_cost(paths)
@@ -83,7 +84,6 @@ class Application:
             path_costs,
         )
 
-
         drones: list[Drone] = []
         for path_index, drone_ids in enumerate(assignments):
             path = paths[path_index]
@@ -93,7 +93,7 @@ class Application:
                     path=path,
                 )
                 drones.append(drone)
-        
+
         simulator = Simulator(drones, map_data)
         simulator.run()
         return 0

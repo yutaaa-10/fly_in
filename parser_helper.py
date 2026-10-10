@@ -22,7 +22,6 @@ class ParserHelper:
 
         content = metadata_text[1:-1].strip()
 
-
         if not content:
             return metadata
 

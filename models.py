@@ -40,10 +40,10 @@ class Zone:
 
 class Drone:
     def __init__(
-            self,
-            drone_id: int,
-            path: list[str],
-	) -> None:
+        self,
+        drone_id: int,
+        path: list[str],
+    ) -> None:
         self.drone_id = drone_id
         self.path = path
         self.path_index = 0
@@ -82,7 +82,4 @@ class Drone:
             self.target_zone = None
 
     def has_arrived(self) -> bool:
-        return self.path_index == len(self.path) -1
-
-
-
+        return self.path_index == len(self.path) - 1

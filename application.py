@@ -63,19 +63,26 @@ class Application:
             return 1
 
         paths = path_finder.sort_paths_by_cost(paths)
+        for path in paths:
+            print(
+                path_finder.get_path_cost(path),
+                path_finder.get_priority_count(path),
+                path,
+            )
 
         path_costs = [
             path_finder.get_path_cost(path)
             for path in paths
         ]
 
-        router = Router()
+        router = Router(graph)
 
         assignments = router.assign_drones(
             map_data.drone_quantity,
             paths,
             path_costs,
         )
+
 
         drones: list[Drone] = []
         for path_index, drone_ids in enumerate(assignments):

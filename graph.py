@@ -27,7 +27,7 @@ class Graph:
         if zone.zone_type == "normal":
             return 1
         if zone.zone_type == "priority":
-            return 2
+            return 1
         if zone.zone_type == "restricted":
             return 2
         if zone.zone_type == "blocked":

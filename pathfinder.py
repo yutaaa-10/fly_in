@@ -97,6 +97,11 @@ class PathFinder:
             if neighbor in current_path:
                 continue
 
+            # blocked zone は通らない
+
+            if self.graph.get_move_cost(neighbor) is None:
+
+                continue
             current_path.append(neighbor)
 
             self._dfs_paths(
@@ -117,5 +122,28 @@ class PathFinder:
             total_cost += move_cost
         return total_cost
 
-    def sort_paths_by_cost(self, paths: list[list[str]]) -> list[list[str]]:
-        return sorted(paths, key=self.get_path_cost)
+    def sort_paths_by_cost(
+        self,
+        paths: list[list[str]],
+    ) -> list[list[str]]:
+        return sorted(
+            paths,
+            key=lambda path: (
+                self.get_path_cost(path),
+                -self.get_priority_count(path),
+            ),
+        )
+
+    def get_priority_count(
+        self,
+        path: list[str],
+    ) -> int:
+        priority_count = 0
+
+        for zone_name in path[1:]:
+            zone = self.graph.map_data.zones[zone_name]
+
+            if zone.zone_type == "priority":
+                priority_count += 1
+
+        return priority_count

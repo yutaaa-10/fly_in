@@ -47,6 +47,9 @@ class Drone:
         self.drone_id = drone_id
         self.path = path
         self.path_index = 0
+        self.in_transit = False
+        self.remaining_turns = 0
+        self.target_zone: str | None = None
 
     def current_zone(self) -> str:
         return self.path[self.path_index]
@@ -59,6 +62,24 @@ class Drone:
     def move(self) -> None:
         if self.next_zone() is not None:
             self.path_index += 1
+
+    def start_transit(
+        self,
+        target_zone: str,
+        remaining_turns: int,
+    ) -> None:
+        self.in_transit = True
+        self.target_zone = target_zone
+        self.remaining_turns = remaining_turns
+
+    def advance_transit(self) -> None:
+        if not self.in_transit:
+            return
+        self.remaining_turns -= 1
+        if self.remaining_turns <= 0:
+            self.path_index += 1
+            self.in_transit = False
+            self.target_zone = None
 
     def has_arrived(self) -> bool:
         return self.path_index == len(self.path) -1

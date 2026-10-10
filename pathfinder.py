@@ -55,6 +55,7 @@ class PathFinder:
                 elif new_distance < distances[neighbor]:
                     previous[neighbor] = current
                     heapq.heappush(priority_queue, (new_distance, neighbor))
+        return None
 
     def build_path(
         self,

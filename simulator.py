@@ -83,9 +83,11 @@ class Simulator:
             if connection is None:
                 continue
 
-            edge_key = tuple(
-                sorted((current_zone, next_zone))
-            )
+            edge_key: tuple[str, str]
+            if current_zone <= next_zone:
+                edge_key = (current_zone, next_zone)
+            else:
+                edge_key = (next_zone, current_zone)
 
             used_capacity = connection_usage.get(
                 edge_key,
@@ -190,9 +192,11 @@ class Simulator:
 
             current_zone = drone.current_zone()
 
-            edge_key = tuple(
-                sorted((current_zone, drone.target_zone))
-            )
+            edge_key: tuple[str, str]
+            if current_zone <= drone.target_zone:
+                edge_key = (current_zone, drone.target_zone)
+            else:
+                edge_key = (drone.target_zone, current_zone)
 
             connection_usage[edge_key] = (
                 connection_usage.get(edge_key, 0) + 1

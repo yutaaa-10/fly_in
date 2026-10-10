@@ -21,7 +21,7 @@ class Graph:
     def get_neighbors(self, zone_name: str) -> list[str]:
         return self.adjacency[zone_name]
 
-    def get_move_cost(self, zone_name: str) -> int:
+    def get_move_cost(self, zone_name: str) -> int | None:
         zone = self.map_data.zones[zone_name]
 
         if zone.zone_type == "normal":

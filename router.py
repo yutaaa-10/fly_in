@@ -50,10 +50,7 @@ class Router:
                 ):
                     capacity = connection_capacities[edge]
                     projected_load = edge_loads.get(edge, 0) + 1
-
-                    move_cost = self.graph.get_move_cost(
-                        path[step_index]
-                    )
+                    move_cost = self.graph.get_move_cost(path[step_index])
 
                     if move_cost is None:
                         continue
@@ -61,18 +58,15 @@ class Router:
                     required_waves = (
                         projected_load + capacity - 1
                     ) // capacity
-
                     pressure = required_waves * move_cost
                     congestion = max(congestion, pressure)
 
                 score = path_costs[path_index] + congestion
-
                 if best_score is None or score < best_score:
                     best_score = score
                     best_path_index = path_index
 
             assignments[best_path_index].append(drone_id)
-
             for edge in path_edges[best_path_index]:
                 edge_loads[edge] = edge_loads.get(edge, 0) + 1
 

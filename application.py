@@ -62,12 +62,7 @@ class Application:
             )
             return 1
 
-        paths = path_finder.sort_paths_by_cost(paths)
-
-        path_costs = []
-        for path in paths:
-            cost = path_finder.get_path_cost(path)
-            path_costs.append(cost)
+        paths, path_costs = path_finder.sort_paths_by_cost(paths)
 
         router = Router(graph)
         assignments = router.assign_drones(

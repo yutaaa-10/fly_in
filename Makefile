@@ -1,5 +1,5 @@
 PYTHON := python3
-MAP ?= test.text
+MAP ?= maps/easy/01_linear_path.txt
 
 install:
 	@$(PYTHON) -m pip install flake8 mypy
@@ -24,7 +24,4 @@ lint-strict:
 	$(PYTHON) -m flake8 .
 	$(PYTHON) -m mypy . --strict
 
-test:
-	@$(MAKE) run MAP=tests/01_linear_path.txt
-
-.PHONY: install run debug clean lint lint-strict test
+.PHONY: install run debug clean lint lint-strict

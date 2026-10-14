@@ -1,31 +1,12 @@
-from collections import deque
 from graph import Graph
-import heapq
 
 
 class PathFinder:
     def __init__(self, graph: Graph) -> None:
         self.graph = graph
 
-    def build_path(
-        self,
-        previous: dict[str, str | None],
-        goal: str,
-    ) -> list[str]:
-
-        path: list[str] = []
-        current: str | None = goal
-
-        while current is not None:
-            path.append(current)
-            current = previous[current]
-
-        path.reverse()
-        return path
-
     def find_all_paths(self, start: str, goal: str) -> list[list[str]]:
         all_paths: list[list[str]] = []
-
         self._dfs_paths(
             current=start,
             goal=goal,
@@ -35,14 +16,16 @@ class PathFinder:
         return all_paths
 
     def _dfs_paths(
-        self,
-        current: str,
-        goal: str,
-        current_path: list[str],
-        all_paths: list[list[str]],
+            self,
+            current: str,
+            goal: str,
+            current_path: list[str],
+            all_paths: list[list[str]],
     ) -> None:
+
         if current == goal:
             all_paths.append(current_path.copy())
+            return None
 
         for neighbor in self.graph.get_neighbors(current):
             if neighbor in current_path:
@@ -50,7 +33,6 @@ class PathFinder:
             if self.graph.get_move_cost(neighbor) is None:
                 continue
             current_path.append(neighbor)
-
             self._dfs_paths(
                 current=neighbor,
                 goal=goal,
@@ -58,86 +40,52 @@ class PathFinder:
                 all_paths=all_paths,
             )
             current_path.pop()
+        return None
 
-    def get_path_cost(self, path: list[str]) -> int:
+    def get_path_cost(
+            self,
+            paths: list[str],
+    ) -> int:
         total_cost = 0
-
-        for zone_name in path[1:]:
+        for zone_name in paths[1:]:
             move_cost = self.graph.get_move_cost(zone_name)
             if move_cost is None:
                 return -1
             total_cost += move_cost
         return total_cost
 
-    def sort_paths_by_cost(
-        self,
-        paths: list[list[str]],
-    ) -> list[list[str]]:
-        return sorted(
-            paths,
-            key=lambda path: (
-                self.get_path_cost(path),
-                -self.get_priority_count(path),
-            ),
-        )
-
     def get_priority_count(
-        self,
-        path: list[str],
+            self,
+            path: list[str],
     ) -> int:
         priority_count = 0
 
         for zone_name in path[1:]:
             zone = self.graph.map_data.zones[zone_name]
-
             if zone.zone_type == "priority":
                 priority_count += 1
-
         return priority_count
 
+    def sort_paths_by_cost(
+        self,
+        paths: list[list[str]],
+    ) -> tuple[list[list[str]], list[int]]:
+        path_data = []
 
+        for path in paths:
+            cost = self.get_path_cost(path)
+            priority_count = self.get_priority_count(path)
+            path_data.append((path, cost, priority_count))
 
-    # def bfs(self, start: str, goal: str) -> list[str] | None:
-    #     queue: deque[str] = deque([start])
-    #     visited: set[str] = {start}
-    #     previous: dict[str, str | None] = {start: None}
+        path_data.sort(
+            key=lambda item: (item[1], -item[2])
+        )
 
-    #     while queue:
-    #         current = queue.popleft()
-    #         if current == goal:
-    #             return self.build_path(previous, goal)
-    #         for neighbor in self.graph.get_neighbors(current):
-    #             if neighbor in visited:
-    #                 continue
-    #             visited.add(neighbor)
-    #             previous[neighbor] = current
-    #             queue.append(neighbor)
-    #     return None
+        sorted_paths = []
+        path_costs = []
 
-    # def dijkstra(
-    #     self,
-    #     start: str,
-    #     goal: str
-    # ) -> list[str] | None:
-    #     priority_queue: list[tuple[int, str]] = [(0, start)]
-    #     distances: dict[str, int] = {start: 0}
-    #     previous: dict[str, str | None] = {start: None}
+        for path, cost, _ in path_data:
+            sorted_paths.append(path)
+            path_costs.append(cost)
 
-    #     while priority_queue:
-    #         current_distance, current = heapq.heappop(priority_queue)
-    #         if current == goal:
-    #             return self.build_path(previous, goal)
-    #         for neighbor in self.graph.get_neighbors(current):
-    #             move_cost = self.graph.get_move_cost(neighbor)
-    #             if move_cost is None:
-    #                 continue
-    #             new_distance = current_distance + move_cost
-    #             if neighbor not in distances:
-    #                 distances[neighbor] = new_distance
-    #                 previous[neighbor] = current
-    #                 heapq.heappush(priority_queue, (new_distance, neighbor))
-    #             elif new_distance < distances[neighbor]:
-    #                 distances[neighbor] = new_distance
-    #                 previous[neighbor] = current
-    #                 heapq.heappush(priority_queue, (new_distance, neighbor))
-    #     return None
+        return sorted_paths, path_costs

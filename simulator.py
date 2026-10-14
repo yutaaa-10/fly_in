@@ -20,13 +20,9 @@ class Simulator:
         move_count = 0
         movements: list[str] = []
 
-        #各zoneに現在何機droneがいるか
         occupancy = self.get_zone_occupancy()
-        #各connectionの現在の使用状況を取得
         connection_usage = self.get_connection_usage()
-        #各zoneの予約状況を取得する
         reservations = self.get_zone_reservations()
-        #このターンに到着したDroneのIDを記録する集合
         arrived_this_turn: set[int] = set()
 
         for drone in self.drones:
@@ -131,7 +127,6 @@ class Simulator:
 
         print(" ".join(movements))
         return move_count
-
 
     def all_arrived(self) -> bool:
         for drone in self.drones:

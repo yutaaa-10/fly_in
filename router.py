@@ -19,24 +19,24 @@ class Router:
     ) -> list[list[int]]:
         assignments: list[list[int]] = [[] for _ in paths]
 
-        path_edges: list[list[tuple[str, str]]] = [
-            [
-                self.edge_key(zone_a, zone_b)
-                for zone_a, zone_b in zip(path, path[1:])
-            ]
-            for path in paths
-        ]
+        path_edges = []
+        for path in paths:
+            edges = []
+            for zone_a, zone_b in zip(path, path[1:]):
+                edge = self.edge_key(zone_a, zone_b)
+                edges.append(edge)
+            path_edges.append(edges)
 
-        connection_capacities: dict[tuple[str, str], int] = {
-            self.edge_key(
+        connection_capacities = {}
+        for connection in self.graph.map_data.connections:
+            edge = self.edge_key(
                 connection.zone_a,
                 connection.zone_b,
-            ): connection.max_link_capacity
-            for connection in self.graph.map_data.connections
-        }
+            )
+            capacity = connection.max_link_capacity
+            connection_capacities[edge] = capacity
 
         edge_loads: dict[tuple[str, str], int] = {}
-
         for drone_id in range(1, drone_quantity + 1):
             best_path_index = 0
             best_score: int | None = None

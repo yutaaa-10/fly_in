@@ -55,7 +55,6 @@ class Application:
             map_data.start_zone,
             map_data.end_zone,
         )
-
         if not paths:
             print(
                 "Error: no path from start to goal",
@@ -64,20 +63,13 @@ class Application:
             return 1
 
         paths = path_finder.sort_paths_by_cost(paths)
-        for path in paths:
-            print(
-                path_finder.get_path_cost(path),
-                path_finder.get_priority_count(path),
-                path,
-            )
 
-        path_costs = [
-            path_finder.get_path_cost(path)
-            for path in paths
-        ]
+        path_costs = []
+        for path in paths:
+            cost = path_finder.get_path_cost(path)
+            path_costs.append(cost)
 
         router = Router(graph)
-
         assignments = router.assign_drones(
             map_data.drone_quantity,
             paths,

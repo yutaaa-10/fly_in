@@ -7,56 +7,6 @@ class PathFinder:
     def __init__(self, graph: Graph) -> None:
         self.graph = graph
 
-    def bfs(self, start: str, goal: str) -> list[str] | None:
-        queue: deque[str] = deque([start])
-        visited: set[str] = {start}
-        previous: dict[str, str | None] = {start: None}
-
-        while queue:
-            current = queue.popleft()
-            if current == goal:
-                return self.build_path(previous, goal)
-            for neighbor in self.graph.get_neighbors(current):
-                if neighbor in visited:
-                    continue
-                visited.add(neighbor)
-                previous[neighbor] = current
-                queue.append(neighbor)
-        return None
-
-    def dijkstra(
-        self,
-        start: str,
-        goal: str
-    ) -> list[str] | None:
-        priority_queue: list[tuple[int, str]] = [(0, start)]
-        distances: dict[str, int] = {start: 0}
-        previous: dict[str, str | None] = {start: None}
-
-        while priority_queue:
-
-            current_distance, current = heapq.heappop(priority_queue)
-
-            if current == goal:
-                return self.build_path(previous, goal)
-
-            for neighbor in self.graph.get_neighbors(current):
-                move_cost = self.graph.get_move_cost(neighbor)
-
-                if move_cost is None:
-                    continue
-
-                new_distance = current_distance + move_cost
-
-                if neighbor not in distances:
-                    distances[neighbor] = new_distance
-                    previous[neighbor] = current
-                    heapq.heappush(priority_queue, (new_distance, neighbor))
-                elif new_distance < distances[neighbor]:
-                    previous[neighbor] = current
-                    heapq.heappush(priority_queue, (new_distance, neighbor))
-        return None
-
     def build_path(
         self,
         previous: dict[str, str | None],
@@ -97,11 +47,7 @@ class PathFinder:
         for neighbor in self.graph.get_neighbors(current):
             if neighbor in current_path:
                 continue
-
-            # blocked zone は通らない
-
             if self.graph.get_move_cost(neighbor) is None:
-
                 continue
             current_path.append(neighbor)
 
@@ -148,3 +94,50 @@ class PathFinder:
                 priority_count += 1
 
         return priority_count
+
+
+
+    # def bfs(self, start: str, goal: str) -> list[str] | None:
+    #     queue: deque[str] = deque([start])
+    #     visited: set[str] = {start}
+    #     previous: dict[str, str | None] = {start: None}
+
+    #     while queue:
+    #         current = queue.popleft()
+    #         if current == goal:
+    #             return self.build_path(previous, goal)
+    #         for neighbor in self.graph.get_neighbors(current):
+    #             if neighbor in visited:
+    #                 continue
+    #             visited.add(neighbor)
+    #             previous[neighbor] = current
+    #             queue.append(neighbor)
+    #     return None
+
+    # def dijkstra(
+    #     self,
+    #     start: str,
+    #     goal: str
+    # ) -> list[str] | None:
+    #     priority_queue: list[tuple[int, str]] = [(0, start)]
+    #     distances: dict[str, int] = {start: 0}
+    #     previous: dict[str, str | None] = {start: None}
+
+    #     while priority_queue:
+    #         current_distance, current = heapq.heappop(priority_queue)
+    #         if current == goal:
+    #             return self.build_path(previous, goal)
+    #         for neighbor in self.graph.get_neighbors(current):
+    #             move_cost = self.graph.get_move_cost(neighbor)
+    #             if move_cost is None:
+    #                 continue
+    #             new_distance = current_distance + move_cost
+    #             if neighbor not in distances:
+    #                 distances[neighbor] = new_distance
+    #                 previous[neighbor] = current
+    #                 heapq.heappush(priority_queue, (new_distance, neighbor))
+    #             elif new_distance < distances[neighbor]:
+    #                 distances[neighbor] = new_distance
+    #                 previous[neighbor] = current
+    #                 heapq.heappush(priority_queue, (new_distance, neighbor))
+    #     return None

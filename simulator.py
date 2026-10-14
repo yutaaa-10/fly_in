@@ -1,3 +1,4 @@
+import sys
 from models import Drone, MapData, Connection
 
 
@@ -11,42 +12,39 @@ class Simulator:
         while not self.all_arrived():
             moved_count = self.run_turn()
             if moved_count == 0:
-                print("Error: simulation deadlock")
+                print("Error: simulation deadlock", file=sys.stderr)
                 return
 
     def run_turn(self) -> int:
         self.turn += 1
-        print(f"Turn {self.turn}")
-
         move_count = 0
+        movements: list[str] = []
 
+        #各zoneに現在何機droneがいるか
         occupancy = self.get_zone_occupancy()
+        #各connectionの現在の使用状況を取得
         connection_usage = self.get_connection_usage()
+        #各zoneの予約状況を取得する
         reservations = self.get_zone_reservations()
+        #このターンに到着したDroneのIDを記録する集合
         arrived_this_turn: set[int] = set()
 
-        # Connection上を移動中のDroneを進める
         for drone in self.drones:
             if not drone.in_transit:
                 continue
 
             target_zone = drone.target_zone
             drone.advance_transit()
-
             if not drone.in_transit:
                 arrived_zone = drone.current_zone()
-
                 if target_zone is not None:
                     reservations[target_zone] -= 1
 
                 occupancy[arrived_zone] += 1
                 arrived_this_turn.add(drone.drone_id)
-
                 move_count += 1
-
-                print(
-                    f"D{drone.drone_id}-{arrived_zone}",
-                    end=" ",
+                movements.append(
+                    f"D{drone.drone_id}-{arrived_zone}"
                 )
 
         drones = sorted(
@@ -58,16 +56,13 @@ class Simulator:
         for drone in drones:
             if drone.drone_id in arrived_this_turn:
                 continue
-
             if drone.has_arrived():
                 continue
-
             if drone.in_transit:
                 continue
 
             current_zone = drone.current_zone()
             next_zone = drone.next_zone()
-
             if next_zone is None:
                 continue
 
@@ -79,7 +74,6 @@ class Simulator:
                 current_zone,
                 next_zone,
             )
-
             if connection is None:
                 continue
 
@@ -102,54 +96,42 @@ class Simulator:
                     occupancy[next_zone]
                     + reservations[next_zone]
                 )
-
                 if future_occupancy >= zone.max_drones:
                     continue
 
-            # restricted Zoneへの移動
             if zone.zone_type == "restricted":
                 occupancy[current_zone] -= 1
-
                 connection_usage[edge_key] = (
                     used_capacity + 1
                 )
-
                 reservations[next_zone] += 1
-
                 drone.start_transit(
                     target_zone=next_zone,
                     remaining_turns=1,
                 )
-
                 move_count += 1
-
-                print(
-                    f"D{drone.drone_id}-in_transit({next_zone})",
-                    end=" ",
+                connection_name = (
+                    f"{connection.zone_a}-{connection.zone_b}"
                 )
-
+                movements.append(
+                    f"D{drone.drone_id}-{connection_name}"
+                )
                 continue
 
-            # 通常移動
             occupancy[current_zone] -= 1
             occupancy[next_zone] += 1
-
             connection_usage[edge_key] = (
                 used_capacity + 1
             )
-
             drone.move()
-
             move_count += 1
-
-            print(
-                f"D{drone.drone_id}-{drone.current_zone()}",
-                end=" ",
+            movements.append(
+                f"D{drone.drone_id}-{drone.current_zone()}"
             )
 
-        print()
-
+        print(" ".join(movements))
         return move_count
+
 
     def all_arrived(self) -> bool:
         for drone in self.drones:
@@ -186,12 +168,10 @@ class Simulator:
         for drone in self.drones:
             if not drone.in_transit:
                 continue
-
             if drone.target_zone is None:
                 continue
 
             current_zone = drone.current_zone()
-
             edge_key: tuple[str, str]
             if current_zone <= drone.target_zone:
                 edge_key = (current_zone, drone.target_zone)
@@ -201,7 +181,6 @@ class Simulator:
             connection_usage[edge_key] = (
                 connection_usage.get(edge_key, 0) + 1
             )
-
         return connection_usage
 
     def get_zone_reservations(self) -> dict[str, int]:
@@ -213,10 +192,7 @@ class Simulator:
         for drone in self.drones:
             if not drone.in_transit:
                 continue
-
             if drone.target_zone is None:
                 continue
-
             reservations[drone.target_zone] += 1
-
         return reservations

@@ -66,10 +66,7 @@ class Simulator:
             if zone.zone_type == "blocked":
                 continue
 
-            connection = self.get_connection(
-                current_zone,
-                next_zone,
-            )
+            connection = self.get_connection(current_zone, next_zone)
             if connection is None:
                 continue
 
@@ -79,11 +76,7 @@ class Simulator:
             else:
                 edge_key = (next_zone, current_zone)
 
-            used_capacity = connection_usage.get(
-                edge_key,
-                0,
-            )
-
+            used_capacity = connection_usage.get(edge_key, 0)
             if used_capacity >= connection.max_link_capacity:
                 continue
 
@@ -97,33 +90,21 @@ class Simulator:
 
             if zone.zone_type == "restricted":
                 occupancy[current_zone] -= 1
-                connection_usage[edge_key] = (
-                    used_capacity + 1
-                )
+                connection_usage[edge_key] = used_capacity + 1
                 reservations[next_zone] += 1
-                drone.start_transit(
-                    target_zone=next_zone,
-                    remaining_turns=1,
-                )
+                drone.start_transit(target_zone=next_zone, remaining_turns=1)
                 move_count += 1
-                connection_name = (
-                    f"{connection.zone_a}-{connection.zone_b}"
-                )
-                movements.append(
-                    f"D{drone.drone_id}-{connection_name}"
-                )
+                connection_name = f"{connection.zone_a}-{connection.zone_b}"
+                movements.append(f"D{drone.drone_id}-{connection_name}")
                 continue
 
             occupancy[current_zone] -= 1
             occupancy[next_zone] += 1
-            connection_usage[edge_key] = (
-                used_capacity + 1
-            )
+            connection_usage[edge_key] = used_capacity + 1
+
             drone.move()
             move_count += 1
-            movements.append(
-                f"D{drone.drone_id}-{drone.current_zone()}"
-            )
+            movements.append(f"D{drone.drone_id}-{drone.current_zone()}")
 
         print(" ".join(movements))
         return move_count
@@ -155,9 +136,7 @@ class Simulator:
                 return connection
         return None
 
-    def get_connection_usage(
-        self,
-    ) -> dict[tuple[str, str], int]:
+    def get_connection_usage(self) -> dict[tuple[str, str], int]:
         connection_usage: dict[tuple[str, str], int] = {}
 
         for drone in self.drones:

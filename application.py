@@ -75,10 +75,7 @@ class Application:
         for path_index, drone_ids in enumerate(assignments):
             path = paths[path_index]
             for drone_id in drone_ids:
-                drone = Drone(
-                    drone_id=drone_id,
-                    path=path,
-                )
+                drone = Drone(drone_id=drone_id, path=path)
                 drones.append(drone)
 
         simulator = Simulator(drones, map_data)

@@ -63,11 +63,7 @@ class Drone:
         if self.next_zone() is not None:
             self.path_index += 1
 
-    def start_transit(
-        self,
-        target_zone: str,
-        remaining_turns: int,
-    ) -> None:
+    def start_transit(self, target_zone: str, remaining_turns: int) -> None:
         self.in_transit = True
         self.target_zone = target_zone
         self.remaining_turns = remaining_turns

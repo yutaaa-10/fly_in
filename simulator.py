@@ -66,7 +66,6 @@ class Simulator:
             if not drone.in_transit:
                 continue
 
-
             current_zone = drone.current_zone()
             target_zone = drone.target_zone
             drone.advance_transit()
@@ -75,7 +74,11 @@ class Simulator:
                 if target_zone is not None:
                     reservations[target_zone] -= 1
 
-                    edge_key = tuple(sorted((current_zone, target_zone)))
+                    edge_key: tuple[str, str] = (
+                        (current_zone, target_zone)
+                        if current_zone <= target_zone
+                        else (target_zone, current_zone)
+                    )
                     connection_usage[edge_key] -= 1
 
                 occupancy[arrived_zone] += 1
@@ -112,7 +115,6 @@ class Simulator:
             if connection is None:
                 continue
 
-            edge_key: tuple[str, str]
             if current_zone <= next_zone:
                 edge_key = (current_zone, next_zone)
             else:

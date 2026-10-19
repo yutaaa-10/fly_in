@@ -6,7 +6,6 @@ from pathfinder import PathFinder
 from router import Router
 from simulator import Simulator
 from models import Drone
-from visualizer import PygameVisualizer
 
 
 class Application:
@@ -110,6 +109,8 @@ class Application:
                 drones.append(drone)
 
         simulator = Simulator(drones, map_data)
+
+        from visualizer import PygameVisualizer
         visualizer = PygameVisualizer(map_data, drones, simulator)
         visualizer.run()
 

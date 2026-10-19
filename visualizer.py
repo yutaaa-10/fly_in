@@ -1,11 +1,11 @@
 import os
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
-import pygame  # noqa: E402
-from models import MapData, Zone  # noqa: E402
-from models import Drone  # noqa: E402
-import math  # noqa: E402
-from simulator import Simulator  # noqa: E402
-import sys  # noqa: E402
+import pygame
+from models import MapData, Zone
+from models import Drone
+import math
+from simulator import Simulator
+import sys
 
 
 class PygameVisualizer:
@@ -196,7 +196,6 @@ class PygameVisualizer:
         If the zone has a supported custom color, its corresponding
         RGB value is returned. Otherwise, a default color is selected
         based on the zone type.
-        The rainbow color is currently represented by white.
 
         Args:
             zone: Zone object containing its type and color attributes.
@@ -204,26 +203,6 @@ class PygameVisualizer:
         Returns:
             A tuple of three integers representing the RGB color.
         """
-        colors = {
-            "black": (0, 0, 0),
-            "blue": (0, 0, 255),
-            "brown": (165, 42, 42),
-            "crimson": (220, 20, 60),
-            "cyan": (0, 255, 255),
-            "darkred": (139, 0, 0),
-            "gold": (255, 215, 0),
-            "green": (0, 128, 0),
-            "lime": (0, 255, 0),
-            "magenta": (255, 0, 255),
-            "maroon": (128, 0, 0),
-            "orange": (255, 165, 0),
-            "purple": (128, 0, 128),
-            "rainbow": (255, 255, 255),
-            "red": (255, 0, 0),
-            "violet": (238, 130, 238),
-            "yellow": (255, 255, 0),
-        }
-
         default_colors = {
             "start": (0, 200, 0),
             "end": (200, 50, 50),
@@ -233,8 +212,12 @@ class PygameVisualizer:
             "normal": (70, 130, 180),
         }
 
-        if zone.color in colors:
-            return colors[zone.color]
+        if zone.color and zone.color != "name":
+            try:
+                color = pygame.Color(zone.color)
+                return(color.r, color.g, color.b)
+            except ValueError:
+                pass
 
         return default_colors.get(
             zone.zone_type,

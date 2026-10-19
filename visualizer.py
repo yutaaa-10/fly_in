@@ -59,6 +59,7 @@ class PygameVisualizer:
         pygame.display.set_caption("Fly_in")
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont(None, 16)
+        self.turn_font = pygame.font.SysFont(None, 45)
 
         self.playing = False
         self.turn_interval = 500
@@ -100,6 +101,14 @@ class PygameVisualizer:
             self.draw_connections()
             self.draw_zones()
             self.draw_drones(self.drones)
+
+            turn_text = self.turn_font.render(
+                f"Trun: {self.simulator.turn}",
+                True,
+                (255, 255, 255),
+            )
+            self.screen.blit(turn_text, (20, 20))
+
             pygame.display.flip()
             self.clock.tick(60)
         pygame.quit()

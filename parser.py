@@ -89,6 +89,13 @@ class Parser:
                 has_drones_quantity = True
 
             elif line.startswith("start_hub:"):
+                if not has_drones_quantity:
+                    print(
+                        f"Error on line {line_number}: Please place the definition of nb_drones on the first line.",
+                        file=sys.stderr,                    
+                    )
+                    return None
+
                 if map_data.start_zone is not None:
                     print(
                         f"Error on line {line_number}: duplicate start_hub",
@@ -110,6 +117,13 @@ class Parser:
                 map_data.start_zone = zone.name
 
             elif line.startswith("end_hub:"):
+                if not has_drones_quantity:
+                    print(
+                        f"Error on line {line_number}: Please place the definition of nb_drones on the first line.",
+                        file=sys.stderr,                    
+                    )
+                    return None
+
                 if map_data.end_zone is not None:
                     print(
                         f"Error on line {line_number}: duplicate end_hub",
@@ -131,6 +145,13 @@ class Parser:
                 map_data.end_zone = zone.name
 
             elif line.startswith("hub:"):
+                if not has_drones_quantity:
+                    print(
+                        f"Error on line {line_number}: Please place the definition of nb_drones on the first line.",
+                        file=sys.stderr,                    
+                    )
+                    return None
+
                 zone = self.helper.parse_zone(
                     line,
                     line_number,
@@ -143,6 +164,13 @@ class Parser:
                 map_data.zones[zone.name] = zone
 
             elif line.startswith("connection:"):
+                if not has_drones_quantity:
+                    print(
+                        f"Error on line {line_number}: Please place the definition of nb_drones on the first line.",
+                        file=sys.stderr,                    
+                    )
+                    return None
+
                 connection = self.helper.parse_connection(
                     line,
                     line_number,

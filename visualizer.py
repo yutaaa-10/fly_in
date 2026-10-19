@@ -1,11 +1,12 @@
+import os
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 import sys
 from simulator import Simulator
 import math
 from models import Drone
 from models import MapData, Zone
 import pygame
-import os
-os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
+
 
 
 class PygameVisualizer:

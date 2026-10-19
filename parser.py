@@ -50,7 +50,6 @@ class Parser:
             if line.startswith("#"):
                 continue
 
-            # ① nb_drones must be defined first
             if not has_drones_quantity and not line.startswith("nb_drones:"):
                 print(
                     f"Error on line {line_number}: "
@@ -120,7 +119,6 @@ class Parser:
                 map_data.start_zone = zone.name
 
             elif line.startswith("end_hub:"):
-                # ② start_hub must be defined before end_hub
                 if map_data.start_zone is None:
                     print(
                         f"Error on line {line_number}: "

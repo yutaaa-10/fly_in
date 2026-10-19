@@ -152,6 +152,13 @@ class Parser:
                     )
                     return None
 
+                if map_data.start_zone is None:
+                    print(
+                        f"Error on line {line_number}: start_zone must be defined before hub",
+                        file=sys.stderr,                
+                    )
+                    return None
+
                 zone = self.helper.parse_zone(
                     line,
                     line_number,

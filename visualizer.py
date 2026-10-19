@@ -1,11 +1,11 @@
+import sys
+from simulator import Simulator
+import math
+from models import Drone
+from models import MapData, Zone
+import pygame
 import os
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
-import pygame
-from models import MapData, Zone
-from models import Drone
-import math
-from simulator import Simulator
-import sys
 
 
 class PygameVisualizer:
@@ -101,9 +101,10 @@ class PygameVisualizer:
             self.draw_connections()
             self.draw_zones()
             self.draw_drones(self.drones)
+            self.draw_transit_drones(self.drones)
 
             turn_text = self.turn_font.render(
-                f"Trun: {self.simulator.turn}",
+                f"Turn: {self.simulator.turn}",
                 True,
                 (255, 255, 255),
             )
@@ -224,7 +225,7 @@ class PygameVisualizer:
         if zone.color and zone.color != "name":
             try:
                 color = pygame.Color(zone.color)
-                return(color.r, color.g, color.b)
+                return (color.r, color.g, color.b)
             except ValueError:
                 pass
 
@@ -246,6 +247,8 @@ class PygameVisualizer:
         zone_drones: dict[str, list[Drone]] = {}
 
         for drone in drones:
+            if drone.in_transit:
+                continue
             zone_name = drone.current_zone()
             if zone_name not in zone_drones:
                 zone_drones[zone_name] = []
@@ -283,6 +286,49 @@ class PygameVisualizer:
                     center=(int(x), int(y) - 15)
                 )
                 self.screen.blit(id_text, text_rect)
+
+    def draw_transit_drones(self, drones: list[Drone]) -> None:
+        """Draw drones currently moving through restricted connections."""
+        for drone in drones:
+            if not drone.in_transit:
+                continue
+
+            current_zone_name = drone.current_zone()
+            target_zone_name = drone.target_zone
+
+            if target_zone_name is None:
+                continue
+
+            current_zone = self.map_data.zones[current_zone_name]
+            target_zone = self.map_data.zones[target_zone_name]
+
+            start_x, start_y = self.to_screen(
+                current_zone.x,
+                current_zone.y,
+            )
+
+            end_x, end_y = self.to_screen(
+                target_zone.x,
+                target_zone.y,
+            )
+
+            x = (start_x + end_x) // 2
+            y = (start_y + end_y) // 2
+            pygame.draw.circle(
+                self.screen,
+                (255, 255, 255),
+                (x, y),
+                8,
+            )
+            id_text = self.font.render(
+                f"D{drone.drone_id}",
+                True,
+                (255, 255, 255),
+            )
+            text_rect = id_text.get_rect(
+                center=(x, y - 18)
+            )
+            self.screen.blit(id_text, text_rect)
 
     def advance_turn(self) -> None:
         """Advance the simulation by one turn.

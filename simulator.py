@@ -66,12 +66,17 @@ class Simulator:
             if not drone.in_transit:
                 continue
 
+
+            current_zone = drone.current_zone()
             target_zone = drone.target_zone
             drone.advance_transit()
             if not drone.in_transit:
                 arrived_zone = drone.current_zone()
                 if target_zone is not None:
                     reservations[target_zone] -= 1
+
+                    edge_key = tuple(sorted((current_zone, target_zone)))
+                    connection_usage[edge_key] -= 1
 
                 occupancy[arrived_zone] += 1
                 arrived_this_turn.add(drone.drone_id)
@@ -122,6 +127,18 @@ class Simulator:
                     occupancy[next_zone]
                     + reservations[next_zone]
                 )
+
+                if zone.zone_type == "restricted":
+                    leaving_count = 0
+                    for other_drone in self.drones:
+                        if other_drone.in_transit:
+                            continue
+                        if other_drone.current_zone() != next_zone:
+                            continue
+                        if other_drone.next_zone() is None:
+                            continue
+                        leaving_count += 1
+                    future_occupancy -= leaving_count
                 if future_occupancy >= zone.max_drones:
                     continue
 
@@ -129,12 +146,14 @@ class Simulator:
                 occupancy[current_zone] -= 1
                 connection_usage[edge_key] = used_capacity + 1
                 reservations[next_zone] += 1
-                drone.start_transit(target_zone=next_zone, remaining_turns=1)
+                drone.start_transit(
+                    target_zone=next_zone,
+                    remaining_turns=1,
+                )
                 move_count += 1
                 connection_name = f"{connection.zone_a}-{connection.zone_b}"
                 movements.append(f"D{drone.drone_id}-{connection_name}")
                 continue
-
             occupancy[current_zone] -= 1
             occupancy[next_zone] += 1
             connection_usage[edge_key] = used_capacity + 1

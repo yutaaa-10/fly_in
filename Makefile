@@ -16,12 +16,12 @@ clean:
 
 lint:
 	$(PYTHON) -m flake8 application.py graph.py main.py models.py parser_helper.py \
-	                    parser.py pathfinder.py router.py simulator.py visualizer.py
+		parser.py pathfinder.py router.py simulator.py visualizer.py
 	$(PYTHON) -m mypy application.py graph.py main.py models.py parser_helper.py \
-	                        parser.py pathfinder.py router.py simulator.py visualizer.py
-	    --warn-return-any --warn-unused-ignores \
-	    --ignore-missing-imports --disallow-untyped-defs \
-	    --check-untyped-defs
+		parser.py pathfinder.py router.py simulator.py visualizer.py \
+		--warn-return-any --warn-unused-ignores \
+		--ignore-missing-imports --disallow-untyped-defs \
+		--check-untyped-defs
 
 lint-strict:
 	$(PYTHON) -m flake8 application.py graph.py main.py models.py parser_helper.py \

@@ -6,10 +6,22 @@ from pathfinder import PathFinder
 from router import Router
 from simulator import Simulator
 from models import Drone
+from visualizer import PygameVisualizer
 
 
 class Application:
+    """Manage the overall execution of the drone routing application.
+
+    This class handles command-line arguments, input file loading,
+    map parsing, pathfinding, drone assignment, and simulation startup.
+    """
+
     def parse_arguments(self) -> argparse.Namespace:
+        """Parse command-line arguments.
+
+        Returns:
+            argparse.Namespace: Parsed arguments containing the map file path.
+        """
         parser = argparse.ArgumentParser(
             description="Drone routiong simulation"
         )
@@ -22,6 +34,15 @@ class Application:
         return parser.parse_args()
 
     def open_file(self, map_file: str) -> str | None:
+        """Read the contents of a map file.
+
+        Args:
+            map_file (str): Path to the input map file.
+
+        Returns:
+            str | None: File contents if reading succeeds,
+                or None if an error occurs.
+        """
         try:
             with open(map_file, mode="r") as file:
                 input_text = file.read()
@@ -35,6 +56,16 @@ class Application:
             return None
 
     def run(self) -> int:
+        """Execute the drone routing application.
+
+        This method loads and validates the map, constructs the graph,
+        finds available paths, assigns drones to routes, and starts
+        the simulation with graphical visualization.
+
+        Returns:
+            int: 0 if the application completes successfully,
+                or 1 if an error occurs during setup.
+        """
         args = self.parse_arguments()
         input_text = self.open_file(args.map_file)
         if input_text is None:
@@ -79,5 +110,7 @@ class Application:
                 drones.append(drone)
 
         simulator = Simulator(drones, map_data)
-        simulator.run()
+        visualizer = PygameVisualizer(map_data, drones, simulator)
+        visualizer.run()
+
         return 0

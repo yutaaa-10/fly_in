@@ -4,13 +4,38 @@ from parser_helper import ParserHelper
 
 
 class Parser:
+    """Parse and validate drone routing map definitions.
+
+    This class processes the input file line by line, identifies
+    drone counts, zones, and connections, and builds a MapData
+    object using ParserHelper for detailed validation.
+
+    Attributes:
+        helper: Helper object for parsing zones and connections.
+    """
+
     def __init__(self) -> None:
+        """Initialize the parser with a ParserHelper instance."""
         self.helper = ParserHelper()
 
     def parse(
             self,
             input_text: str,
     ) -> MapData | None:
+        """Parse input text into a validated map configuration.
+
+        This method processes drone counts, start and end zones,
+        regular zones, and connections. It skips empty lines and
+        comments, validates required definitions, and reports
+        errors to standard error output.
+
+        Args:
+            input_text: Complete contents of the input map file.
+
+        Returns:
+            A MapData object containing the parsed map if valid,
+            or None if a syntax or validation error occurs.
+        """
         map_data = MapData()
 
         lines = input_text.splitlines()

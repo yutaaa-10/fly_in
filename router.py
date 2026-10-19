@@ -2,11 +2,38 @@ from graph import Graph
 
 
 class Router:
+    """Assign drones to paths while considering connection congestion.
+
+    This class evaluates available paths using their movement costs
+    and estimated connection loads. Drones are assigned one by one
+    to the path with the lowest estimated score.
+
+    Attributes:
+        graph: Graph containing zone and connection information.
+    """
+
     def __init__(self, graph: Graph) -> None:
+        """Initialize the router with a graph.
+
+        Args:
+            graph: Graph used to access connections and movement costs.
+        """
         self.graph = graph
 
     @staticmethod
     def edge_key(zone_a: str, zone_b: str) -> tuple[str, str]:
+        """Create a consistent key for a bidirectional connection.
+
+        The zone names are sorted lexicographically so that
+        connections A-B and B-A produce the same key.
+
+        Args:
+            zone_a: Name of the first zone.
+            zone_b: Name of the second zone.
+
+        Returns:
+            A tuple containing the two zone names in sorted order.
+        """
         if zone_a <= zone_b:
             return (zone_a, zone_b)
         return (zone_b, zone_a)
@@ -17,6 +44,22 @@ class Router:
         paths: list[list[str]],
         path_costs: list[int],
     ) -> list[list[int]]:
+        """Assign drones to paths using estimated congestion scores.
+
+        This method assigns drones sequentially to the path with
+        the lowest estimated score. Each score combines the path's
+        movement cost with a congestion estimate based on connection
+        capacities, projected loads, and zone movement costs.
+
+        Args:
+            drone_quantity: Total number of drones to assign.
+            paths: List of available paths represented by zone names.
+            path_costs: Movement costs corresponding to each path.
+
+        Returns:
+            A list of drone ID lists, where each inner list contains
+            the drones assigned to the corresponding path.
+        """
         assignments: list[list[int]] = [[] for _ in paths]
 
         path_edges = []

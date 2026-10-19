@@ -3,10 +3,29 @@ from models import Zone, MapData, Connection
 
 
 class ParserHelper:
+    """Parse and validate individual map definitions.
+
+    This class provides helper methods for parsing metadata,
+    zone definitions, and connection definitions.
+    """
+
     def parse_metadata(
         self,
         metadata_text: str
     ) -> dict[str, str]:
+        """Parse metadata text into a dictionary of key-value pairs.
+
+        Args:
+            metadata_text: Metadata string enclosed in square brackets.
+
+        Returns:
+            A dictionary containing metadata keys and values.
+            Returns an empty dictionary if no metadata is provided.
+
+        Raises:
+            ValueError: If the metadata format is invalid, an entry
+                is malformed, or a metadata key is duplicated.
+        """
         metadata: dict[str, str] = {}
 
         metadata_text = metadata_text.strip()
@@ -56,7 +75,19 @@ class ParserHelper:
             map_data: MapData,
             ignore_max_drones: bool = False
     ) -> Zone | None:
+        """Parse and validate a zone definition from an input line.
 
+        Args:
+            line: Input line containing the zone definition.
+            line_number: Line number used for error reporting.
+            map_data: Map data used to check for duplicate zone names.
+            ignore_max_drones: Whether to ignore the zone capacity
+                and use unlimited capacity instead.
+
+        Returns:
+            A Zone object if parsing succeeds, or None if the
+            definition is invalid.
+        """
         parts = line.split(":", maxsplit=1)
 
         if len(parts) != 2:
@@ -191,6 +222,18 @@ class ParserHelper:
         line_number: int,
         map_data: MapData
     ) -> Connection | None:
+        """Parse and validate a connection definition from an input line.
+
+        Args:
+            line: Input line containing the connection definition.
+            line_number: Line number used for error reporting.
+            map_data: Map data used to validate connected zones
+                and detect duplicate connections.
+
+        Returns:
+            A Connection object if parsing succeeds, or None if
+            the definition is invalid.
+        """
         parts = line.split(":", maxsplit=1)
         if len(parts) != 2:
             print(

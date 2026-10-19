@@ -3,12 +3,36 @@ from models import Drone, MapData, Connection
 
 
 class Simulator:
+    """Manage turn-based drone movements through the routing network.
+
+    This class advances drones along their assigned paths while
+    checking zone capacities, connection capacities, and multi-turn
+    movements through restricted zones.
+
+    Attributes:
+        drones: List of drones participating in the simulation.
+        turn: Current simulation turn number.
+        map_data: Map data containing zones and connections.
+    """
+
     def __init__(self, drones: list[Drone], map_data: MapData) -> None:
+        """Initialize the simulator with drones and map data.
+
+        Args:
+            drones: List of drones with assigned paths.
+            map_data: Map configuration containing zones and connections.
+        """
         self.drones = drones
         self.turn = 0
         self.map_data = map_data
 
     def run(self) -> None:
+        """Run the simulation until all drones arrive or a deadlock occurs.
+
+        This method repeatedly executes simulation turns.
+        If a turn makes no progress while drones remain unfinished,
+        an error message is printed to standard error output.
+        """
         while not self.all_arrived():
             moved_count = self.run_turn()
             if moved_count == 0:
@@ -16,6 +40,19 @@ class Simulator:
                 return
 
     def run_turn(self) -> int:
+        """Execute one turn of the drone movement simulation.
+
+        This method updates drones already in transit, calculates
+        zone occupancy and connection usage, and attempts to move
+        eligible drones along their assigned paths.
+
+        Movements are checked against zone and connection capacities.
+        Restricted zones require a multi-turn transit process.
+
+        Returns:
+            Number of drone movement actions completed or started
+            during the current turn.
+        """
         self.turn += 1
         move_count = 0
         movements: list[str] = []
@@ -110,12 +147,27 @@ class Simulator:
         return move_count
 
     def all_arrived(self) -> bool:
+        """Check whether all drones have reached their destinations.
+
+        Returns:
+            True if every drone has reached the end of its assigned
+            path, otherwise False.
+        """
         for drone in self.drones:
             if not drone.has_arrived():
                 return False
         return True
 
     def get_zone_occupancy(self) -> dict[str, int]:
+        """Calculate the current number of drones in each zone.
+
+        Drones currently in transit are excluded from zone occupancy
+        because they are moving between zones.
+
+        Returns:
+            A dictionary mapping zone names to the number of drones
+            currently occupying each zone.
+        """
         occupancy: dict[str, int] = {}
 
         for zone_name in self.map_data.zones:
@@ -128,6 +180,19 @@ class Simulator:
         return occupancy
 
     def get_connection(self, zone_a: str, zone_b: str) -> Connection | None:
+        """Find the connection between two zones.
+
+        Connections are treated as bidirectional, so the order
+        of the zone names does not affect the search.
+
+        Args:
+            zone_a: Name of the first zone.
+            zone_b: Name of the second zone.
+
+        Returns:
+            The Connection object linking the two zones,
+            or None if no connection exists.
+        """
         for connection in self.map_data.connections:
             if connection.zone_a == zone_a and connection.zone_b == zone_b:
                 return connection
@@ -137,6 +202,15 @@ class Simulator:
         return None
 
     def get_connection_usage(self) -> dict[tuple[str, str], int]:
+        """Calculate connection usage by drones currently in transit.
+
+        Each connection is represented by a tuple of zone names
+        sorted lexicographically to ensure bidirectional consistency.
+
+        Returns:
+            A dictionary mapping connection keys to the number
+            of drones currently in transit on each connection.
+        """
         connection_usage: dict[tuple[str, str], int] = {}
 
         for drone in self.drones:
@@ -158,6 +232,15 @@ class Simulator:
         return connection_usage
 
     def get_zone_reservations(self) -> dict[str, int]:
+        """Calculate destination zone reservations for drones in transit.
+
+        Each drone currently moving toward a zone reserves one
+        position in that destination zone.
+
+        Returns:
+            A dictionary mapping zone names to the number of
+            incoming drones that have reserved space in each zone.
+        """
         reservations: dict[str, int] = {}
 
         for zone_name in self.map_data.zones:

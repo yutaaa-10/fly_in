@@ -42,7 +42,7 @@ class Parser:
         has_drones_quantity = False
 
         for line_number, line in enumerate(lines, start=1):
-            line = line.strip()
+            line = line.split("#", maxsplit=1)[0].strip()
 
             if not line:
                 continue
@@ -119,14 +119,6 @@ class Parser:
                 map_data.start_zone = zone.name
 
             elif line.startswith("end_hub:"):
-                if map_data.start_zone is None:
-                    print(
-                        f"Error on line {line_number}: "
-                        "start_hub must be defined before end_hub",
-                        file=sys.stderr,
-                    )
-                    return None
-
                 if map_data.end_zone is not None:
                     print(
                         f"Error on line {line_number}: duplicate end_hub",
@@ -148,14 +140,6 @@ class Parser:
                 map_data.end_zone = zone.name
 
             elif line.startswith("hub:"):
-                if map_data.start_zone is None:
-                    print(
-                        f"Error on line {line_number}: "
-                        "start_hub must be defined before hub",
-                        file=sys.stderr,
-                    )
-                    return None
-
                 zone = self.helper.parse_zone(
                     line,
                     line_number,

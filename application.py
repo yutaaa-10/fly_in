@@ -6,6 +6,7 @@ from pathfinder import PathFinder
 from router import Router
 from simulator import Simulator
 from models import Drone
+import os
 
 
 class Application:
@@ -110,6 +111,7 @@ class Application:
 
         simulator = Simulator(drones, map_data)
 
+        os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
         from visualizer import PygameVisualizer
         visualizer = PygameVisualizer(map_data, drones, simulator)
         visualizer.run()

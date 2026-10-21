@@ -15,18 +15,14 @@ clean:
 	rm -rf .mypy_cache .pytest_cache
 
 lint:
-	$(PYTHON) -m flake8 application.py graph.py main.py models.py parser_helper.py \
-		parser.py pathfinder.py router.py simulator.py visualizer.py
-	$(PYTHON) -m mypy application.py graph.py main.py models.py parser_helper.py \
-		parser.py pathfinder.py router.py simulator.py visualizer.py \
+	$(PYTHON) -m flake8 .
+	$(PYTHON) -m mypy . \
 		--warn-return-any --warn-unused-ignores \
 		--ignore-missing-imports --disallow-untyped-defs \
 		--check-untyped-defs
 
 lint-strict:
-	$(PYTHON) -m flake8 application.py graph.py main.py models.py parser_helper.py \
-	                    parser.py pathfinder.py router.py simulator.py visualizer.py
-	$(PYTHON) -m mypy application.py graph.py main.py models.py parser_helper.py \
-	                        parser.py pathfinder.py router.py simulator.py visualizer.py --strict
+	$(PYTHON) -m flake8 .
+	$(PYTHON) -m mypy . --strict
 
 .PHONY: install run debug clean lint lint-strict

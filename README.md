@@ -171,7 +171,7 @@ connection: intermediate-goal
 
 ## Additional Details: Algorithms and Implementation Strategy
 
-### Algorithm Details
+### Algorithm Description
 
 The program first parses the input file and builds a graph of zones and connections.
 It then uses depth-first search (DFS) and backtracking to discover paths from the start to the goal.

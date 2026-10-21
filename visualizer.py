@@ -285,7 +285,12 @@ class PygameVisualizer:
                 self.screen.blit(id_text, text_rect)
 
     def draw_transit_drones(self, drones: list[Drone]) -> None:
-        """Draw drones currently moving through restricted connections."""
+        """Draw drones currently moving through restricted connections.
+
+        Args:
+            drones: List of drones to render.
+        """
+
         for drone in drones:
             if not drone.in_transit:
                 continue

@@ -75,13 +75,12 @@ class Application:
         map_data = parser.parse(input_text)
         if map_data is None:
             return 1
-
         if map_data.start_zone is None or map_data.end_zone is None:
             return 1
 
         graph = Graph(map_data)
-        path_finder = PathFinder(graph)
 
+        path_finder = PathFinder(graph)
         paths = path_finder.find_all_paths(
             map_data.start_zone,
             map_data.end_zone,
